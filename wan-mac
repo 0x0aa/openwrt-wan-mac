@@ -6,7 +6,7 @@ start() {
   OLDMAC=$(uci get network.wan.macaddr)
   logger "[WAN-MAC] Old WAN MAC address is ${OLDMAC}."
 
-  BASE=00:00:00:00:00:00
+  BASE=02:00:00:00:00:00
   MASK=03:00:00:00:00:00
   RAND=$(hexdump -n 6 -e '3/2 "%02X"' /dev/urandom)
 
@@ -14,7 +14,7 @@ start() {
   MASK=$((0x${MASK//:}))
   RAND=$((0x${RAND}))
 
-  NEWMAC=$(printf '%X' $(((BASE & MASK) | (RAND & ~MASK))) | sed 's/../&:/g;s/:$//')
+  NEWMAC=$(printf '%012X' $(((BASE & MASK) | (RAND & ~MASK))) | sed 's/../&:/g;s/:$//')
 
   logger "[WAN-MAC] Applying new random MAC address to WAN (${NEWMAC})..."
   uci set network.wan.macaddr=${NEWMAC}
